@@ -57,6 +57,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
     timeout = 5
     lock = threading.Lock()
     admin_path = 'http://proxy2'
+    check_ssl = True
 
     def __init__(self, *args, **kwargs):
         self.tls = threading.local()
@@ -224,8 +225,13 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         if origin not in self.tls.conns:
             proxy_config = self.server.proxy_config
             custom_proxy_authorization = self.server.options.get('custom_proxy_authorization', None)
+            check_ssl = self.server.options.get('ssl_verify', True)
             if scheme == 'https':
-                self.tls.conns[origin] = ProxyAwareHTTPSConnection(proxy_config, custom_proxy_authorization, netloc, timeout=self.timeout)
+                if check_ssl:
+                    self.tls.conns[origin] = ProxyAwareHTTPSConnection(proxy_config, custom_proxy_authorization, netloc, timeout=self.timeout)
+                else:
+                    context = ssl._create_unverified_context()
+                    self.tls.conns[origin] = ProxyAwareHTTPSConnection(proxy_config, custom_proxy_authorization, netloc, context=context, timeout=self.timeout)
             else:
                 self.tls.conns[origin] = ProxyAwareHTTPConnection(proxy_config, custom_proxy_authorization, netloc, timeout=self.timeout)
 

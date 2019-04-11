@@ -558,6 +558,9 @@ Other options that can be passed to Selenium Wire via the ``seleniumwire_options
     }
     driver = webdriver.Firefox(seleniumwire_options=options)
 
+``ssl_verify``
+    If it's `False` ignore the certificate check on request.  Allow self signed certificate on development servers. 
+
 Limitations
 ~~~~~~~~~~~
 
