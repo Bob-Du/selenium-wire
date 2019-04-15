@@ -251,6 +251,10 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         for k in hop_by_hop:
             del headers[k]
 
+        if 'X-Proxy-Authorization' in headers:
+            headers['Proxy-Authorization'] = headers['X-Proxy-Authorization']
+            del headers['X-Proxy-Authorization']
+
         # accept only supported encodings
         if 'Accept-Encoding' in headers:
             ae = headers['Accept-Encoding']
